@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EMI Calculator</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f5f7;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 24px 16px 60px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 24px 32px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #6b6b6b;
+    text-decoration: none;
+    margin-bottom: 14px;
+  }
+  .back-link:hover {
+    color: #2f6fed;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0 0 24px;
+  }
+  .field {
+    margin-bottom: 22px;
+  }
+  .field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  label {
+    font-size: 14px;
+    color: #4a4a4a;
+    font-weight: 500;
+  }
+  input[type="number"], input[type="text"] {
+    width: 150px;
+    text-align: right;
+    padding: 6px 10px;
+    font-size: 14px;
+    background: #ffffff;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+  #roi-num, #yrs-num {
+    width: 80px;
+    padding-right: 4px;
+  }
+  .suffix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .suffix-wrap span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-left: 6px;
+  }
+  .prefix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .prefix-wrap span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-right: 6px;
+  }
+  #amt-num {
+    width: 150px;
+  }
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: #e2e2e2;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #9a9a9a;
+    margin-top: 4px;
+  }
+  .results {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .result-box {
+    background: #f6f7f9;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .result-box.total {
+    background: #eaf1ff;
+    grid-column: 1 / -1;
+  }
+  .result-label {
+    font-size: 11.5px;
+    color: #6b6b6b;
+    margin: 0 0 6px;
+  }
+  .result-value {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    word-break: break-word;
+  }
+  .result-box.total .result-value {
+    color: #2f6fed;
+    font-size: 20px;
+  }
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #b0b0b0;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <a class="back-link" href="index.html">&#8249; All calculators</a>
+  <h1>EMI calculator</h1>
+  <p class="subtitle">Estimate your equated monthly installment on a loan</p>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Loan amount</label>
+      <span class="prefix-wrap">
+        <span>₹</span>
+        <input id="amt-num" type="text" inputmode="numeric" value="1,00,000" />
+      </span>
+    </div>
+    <input id="amt-range" type="range" min="100000" max="10000000" step="10000" value="100000" />
+    <div class="range-labels"><span>₹1,00,000</span><span>₹1,00,00,000</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Rate of interest (p.a.)</label>
+      <span class="suffix-wrap">
+        <input id="roi-num" type="number" min="5" max="20" step="0.1" value="5" />
+        <span>%</span>
+      </span>
+    </div>
+    <input id="roi-range" type="range" min="5" max="20" step="0.1" value="5" />
+    <div class="range-labels"><span>5%</span><span>20%</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Loan tenure</label>
+      <span class="suffix-wrap">
+        <input id="yrs-num" type="number" min="1" max="30" step="1" value="1" />
+        <span>yr</span>
+      </span>
+    </div>
+    <input id="yrs-range" type="range" min="1" max="30" step="1" value="1" />
+    <div class="range-labels"><span>1 yr</span><span>30 yr</span></div>
+  </div>
+
+  <div class="results">
+    <div class="result-box total">
+      <p class="result-label">Monthly EMI</p>
+      <p class="result-value" id="out-emi">-</p>
+    </div>
+    <div class="result-box">
+      <p class="result-label">Principal amount</p>
+      <p class="result-value" id="out-principal">-</p>
+    </div>
+    <div class="result-box">
+      <p class="result-label">Total interest</p>
+      <p class="result-value" id="out-interest">-</p>
+    </div>
+    <div class="result-box" style="grid-column: 1 / -1;">
+      <p class="result-label">Total amount</p>
+      <p class="result-value" id="out-total">-</p>
+    </div>
+  </div>
+
+  <footer>For illustration purposes only. Not financial advice.</footer>
+</div>
+
+<script>
+  const amtNum = document.getElementById('amt-num');
+  const amtRange = document.getElementById('amt-range');
+  const roiNum = document.getElementById('roi-num');
+  const roiRange = document.getElementById('roi-range');
+  const yrsNum = document.getElementById('yrs-num');
+  const yrsRange = document.getElementById('yrs-range');
+  const outEmi = document.getElementById('out-emi');
+  const outPrincipal = document.getElementById('out-principal');
+  const outInterest = document.getElementById('out-interest');
+  const outTotal = document.getElementById('out-total');
+
+  function fmtINR(n) {
+    return '₹' + Math.round(n).toLocaleString('en-IN');
+  }
+
+  function fmtAmountInput(n) {
+    return Math.round(n).toLocaleString('en-IN');
+  }
+
+  function parseAmount(str) {
+    return parseFloat(String(str).replace(/[^0-9.]/g, '')) || 0;
+  }
+
+  function clamp(v, min, max) {
+    return Math.min(max, Math.max(min, v));
+  }
+
+  function computeEMI(principal, annualRatePct, years) {
+    // Standard EMI formula: EMI = P x R x (1+R)^N / [(1+R)^N - 1]
+    // R = monthly interest rate, N = tenure in months
+    const R = annualRatePct / 100 / 12;
+    const N = years * 12;
+    const emi = R === 0
+      ? principal / N
+      : (principal * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+    const totalAmount = emi * N;
+    const totalInterest = totalAmount - principal;
+    return { emi, principal, totalInterest, totalAmount };
+  }
+
+  function compute() {
+    const principal = clamp(parseAmount(amtNum.value), 100000, 10000000);
+    const roi = clamp(parseFloat(roiNum.value) || 0, 5, 20);
+    const years = clamp(parseInt(yrsNum.value, 10) || 0, 1, 30);
+
+    const { emi, totalInterest, totalAmount } = computeEMI(principal, roi, years);
+
+    outEmi.textContent = fmtINR(emi);
+    outPrincipal.textContent = fmtINR(principal);
+    outInterest.textContent = fmtINR(totalInterest);
+    outTotal.textContent = fmtINR(totalAmount);
+  }
+
+  amtNum.addEventListener('input', () => {
+    const raw = clamp(parseAmount(amtNum.value), 100000, 10000000);
+    amtRange.value = raw;
+    compute();
+  });
+  amtNum.addEventListener('blur', () => {
+    const raw = clamp(parseAmount(amtNum.value), 100000, 10000000);
+    amtNum.value = fmtAmountInput(raw);
+    amtRange.value = raw;
+    compute();
+  });
+  amtRange.addEventListener('input', () => {
+    amtNum.value = fmtAmountInput(amtRange.value);
+    compute();
+  });
+
+  function linkPair(numEl, rangeEl, min, max) {
+    numEl.addEventListener('input', () => {
+      rangeEl.value = clamp(parseFloat(numEl.value) || min, min, max);
+      compute();
+    });
+    rangeEl.addEventListener('input', () => {
+      numEl.value = rangeEl.value;
+      compute();
+    });
+  }
+
+  linkPair(roiNum, roiRange, 5, 20);
+  linkPair(yrsNum, yrsRange, 1, 30);
+
+  compute();
+</script>
+</body>
+</html>
