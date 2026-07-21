@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lumpsum Investment Calculator</title>
+<title>Investment Calculators</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -15,283 +15,121 @@
     display: flex;
     justify-content: center;
   }
-  .card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 28px 24px 32px;
+  .wrap {
     max-width: 460px;
     width: 100%;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
   }
   h1 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
-    margin: 0 0 4px;
+    margin: 0 0 6px;
   }
   .subtitle {
     font-size: 13px;
     color: #6b6b6b;
-    margin: 0 0 24px;
-  }
-  .field {
-    margin-bottom: 22px;
-  }
-  .field-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  label {
-    font-size: 14px;
-    color: #4a4a4a;
-    font-weight: 500;
-  }
-  .value-badge {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1a1a;
-  }
-  input[type="number"] {
-    width: 150px;
-    text-align: right;
-    padding: 6px 10px;
-    font-size: 14px;
-    border: 1px solid #d8d8d8;
-    border-radius: 8px;
-    font-weight: 600;
-  }
-  #roi-num, #yrs-num {
-    width: 80px;
-    padding-right: 4px;
-  }
-  .suffix-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-  }
-  .suffix-wrap span {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-left: 6px;
-  }
-  .prefix-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-  }
-  .prefix-wrap span {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-right: 6px;
-  }
-  #amt-num {
-    width: 130px;
-  }
-  input[type="range"] {
-    width: 100%;
-    -webkit-appearance: none;
-    height: 4px;
-    border-radius: 2px;
-    background: #e2e2e2;
-    outline: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #2f6fed;
-    cursor: pointer;
-    border: 3px solid #fff;
-    box-shadow: 0 0 0 1px #2f6fed;
-  }
-  input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #2f6fed;
-    cursor: pointer;
-    border: 3px solid #fff;
-    box-shadow: 0 0 0 1px #2f6fed;
-  }
-  .range-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #9a9a9a;
-    margin-top: 4px;
-  }
-  .results {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .result-box {
-    background: #f6f7f9;
-    border-radius: 12px;
-    padding: 14px 10px;
-    text-align: center;
-  }
-  .result-box.total {
-    background: #eaf1ff;
-  }
-  .result-label {
-    font-size: 11.5px;
-    color: #6b6b6b;
-    margin: 0 0 6px;
-  }
-  .result-value {
-    font-size: 15px;
-    font-weight: 700;
     margin: 0;
-    word-break: break-word;
   }
-  .result-box.total .result-value {
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover {
+    border-color: #2f6fed;
+    transform: translateY(-1px);
+  }
+  .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #eaf1ff;
     color: #2f6fed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .card-text {
+    flex: 1;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0;
+    line-height: 1.4;
+  }
+  .arrow {
+    font-size: 18px;
+    color: #b0b0b0;
+    flex-shrink: 0;
   }
   footer {
     text-align: center;
     font-size: 11px;
     color: #b0b0b0;
-    margin-top: 24px;
+    margin-top: 28px;
   }
 </style>
 </head>
 <body>
-<div class="card">
-  <h1>Lumpsum investment calculator</h1>
-  <p class="subtitle">Estimate the future value of a one-time investment</p>
-
-  <div class="field">
-    <div class="field-header">
-      <label>Total investment</label>
-      <span class="prefix-wrap">
-        <span>₹</span>
-        <input id="amt-num" type="text" inputmode="numeric" value="1,00,000" />
-      </span>
-    </div>
-    <input id="amt-range" type="range" min="500" max="10000000" step="500" value="100000" />
-    <div class="range-labels"><span>₹500</span><span>₹1,00,00,000</span></div>
+<div class="wrap">
+  <div class="header">
+    <h1>Investment calculators</h1>
+    <p class="subtitle">Pick a calculator to estimate your investment growth</p>
   </div>
 
-  <div class="field">
-    <div class="field-header">
-      <label>Expected return (p.a.)</label>
-      <span class="suffix-wrap">
-        <input id="roi-num" type="number" min="1" max="30" step="0.5" value="12" />
-        <span>%</span>
-      </span>
-    </div>
-    <input id="roi-range" type="range" min="1" max="30" step="0.5" value="12" />
-    <div class="range-labels"><span>1%</span><span>30%</span></div>
-  </div>
+  <div class="cards">
+    <a class="card-link" href="lumpsum.html">
+      <div class="card">
+        <div class="icon">L</div>
+        <div class="card-text">
+          <p class="card-title">Lumpsum calculator</p>
+          <p class="card-desc">Estimate the future value of a one-time investment</p>
+        </div>
+        <div class="arrow">&#8250;</div>
+      </div>
+    </a>
 
-  <div class="field">
-    <div class="field-header">
-      <label>Time period</label>
-      <span class="suffix-wrap">
-        <input id="yrs-num" type="number" min="1" max="40" step="1" value="10" />
-        <span>yr</span>
-      </span>
-    </div>
-    <input id="yrs-range" type="range" min="1" max="40" step="1" value="10" />
-    <div class="range-labels"><span>1 yr</span><span>40 yr</span></div>
-  </div>
-
-  <div class="results">
-    <div class="result-box">
-      <p class="result-label">Invested amount</p>
-      <p class="result-value" id="out-invested">-</p>
-    </div>
-    <div class="result-box">
-      <p class="result-label">Est. returns</p>
-      <p class="result-value" id="out-returns">-</p>
-    </div>
-    <div class="result-box total">
-      <p class="result-label">Total value</p>
-      <p class="result-value" id="out-total">-</p>
-    </div>
+    <a class="card-link" href="sip.html">
+      <div class="card">
+        <div class="icon">S</div>
+        <div class="card-text">
+          <p class="card-title">SIP calculator</p>
+          <p class="card-desc">Estimate returns on a monthly SIP, with optional annual step-up</p>
+        </div>
+        <div class="arrow">&#8250;</div>
+      </div>
+    </a>
   </div>
 
   <footer>For illustration purposes only. Not investment advice.</footer>
 </div>
-
-<script>
-  const amtNum = document.getElementById('amt-num');
-  const amtRange = document.getElementById('amt-range');
-  const roiNum = document.getElementById('roi-num');
-  const roiRange = document.getElementById('roi-range');
-  const yrsNum = document.getElementById('yrs-num');
-  const yrsRange = document.getElementById('yrs-range');
-  const outInvested = document.getElementById('out-invested');
-  const outReturns = document.getElementById('out-returns');
-  const outTotal = document.getElementById('out-total');
-
-  function fmtINR(n) {
-    return '₹' + Math.round(n).toLocaleString('en-IN');
-  }
-
-  function fmtAmountInput(n) {
-    return Math.round(n).toLocaleString('en-IN');
-  }
-
-  function parseAmount(str) {
-    return parseFloat(String(str).replace(/[^0-9.]/g, '')) || 0;
-  }
-
-  function clamp(v, min, max) {
-    return Math.min(max, Math.max(min, v));
-  }
-
-  function compute() {
-    const amount = clamp(parseAmount(amtNum.value), 500, 10000000);
-    const roi = clamp(parseFloat(roiNum.value) || 0, 1, 30);
-    const years = clamp(parseInt(yrsNum.value, 10) || 0, 1, 40);
-
-    const invested = amount;
-    const total = invested * Math.pow(1 + roi / 100, years);
-    const returns = total - invested;
-
-    outInvested.textContent = fmtINR(invested);
-    outReturns.textContent = fmtINR(returns);
-    outTotal.textContent = fmtINR(total);
-  }
-
-  amtNum.addEventListener('input', () => {
-    const raw = clamp(parseAmount(amtNum.value), 500, 10000000);
-    amtRange.value = raw;
-    compute();
-  });
-  amtNum.addEventListener('blur', () => {
-    const raw = clamp(parseAmount(amtNum.value), 500, 10000000);
-    amtNum.value = fmtAmountInput(raw);
-    amtRange.value = raw;
-    compute();
-  });
-  amtRange.addEventListener('input', () => {
-    amtNum.value = fmtAmountInput(amtRange.value);
-    compute();
-  });
-
-  function linkPair(numEl, rangeEl, min, max) {
-    numEl.addEventListener('input', () => {
-      rangeEl.value = clamp(parseFloat(numEl.value) || min, min, max);
-      compute();
-    });
-    rangeEl.addEventListener('input', () => {
-      numEl.value = rangeEl.value;
-      compute();
-    });
-  }
-
-  linkPair(roiNum, roiRange, 1, 30);
-  linkPair(yrsNum, yrsRange, 1, 40);
-
-  compute();
-</script>
 </body>
 </html>

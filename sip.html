@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SIP Calculator</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f5f7;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 24px 16px 60px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 24px 32px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0 0 24px;
+  }
+  .field {
+    margin-bottom: 22px;
+  }
+  .field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  label {
+    font-size: 14px;
+    color: #4a4a4a;
+    font-weight: 500;
+  }
+  input[type="number"], input[type="text"] {
+    width: 150px;
+    text-align: right;
+    padding: 6px 10px;
+    font-size: 14px;
+    background: #ffffff;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+  #step-num, #roi-num, #yrs-num {
+    width: 80px;
+    padding-right: 4px;
+  }
+  .suffix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .suffix-wrap span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-left: 6px;
+  }
+  .prefix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .prefix-wrap span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-right: 6px;
+  }
+  #amt-num {
+    width: 130px;
+  }
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: #e2e2e2;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #9a9a9a;
+    margin-top: 4px;
+  }
+  .results {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .result-box {
+    background: #f6f7f9;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .result-box.total {
+    background: #eaf1ff;
+  }
+  .result-label {
+    font-size: 11.5px;
+    color: #6b6b6b;
+    margin: 0 0 6px;
+  }
+  .result-value {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    word-break: break-word;
+  }
+  .result-box.total .result-value {
+    color: #2f6fed;
+  }
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #b0b0b0;
+    margin-top: 24px;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #6b6b6b;
+    text-decoration: none;
+    margin-bottom: 14px;
+  }
+  .back-link:hover {
+    color: #2f6fed;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <a class="back-link" href="index.html">&#8249; All calculators</a>
+  <h1>SIP calculator</h1>
+  <p class="subtitle">Estimate the future value of a monthly SIP, with optional annual step-up</p>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Monthly investment</label>
+      <span class="prefix-wrap">
+        <span>₹</span>
+        <input id="amt-num" type="text" inputmode="numeric" value="500" />
+      </span>
+    </div>
+    <input id="amt-range" type="range" min="500" max="100000" step="500" value="500" />
+    <div class="range-labels"><span>₹500</span><span>₹1,00,000</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Annual step-up</label>
+      <span class="suffix-wrap">
+        <input id="step-num" type="number" min="0" max="50" step="1" value="0" />
+        <span>%</span>
+      </span>
+    </div>
+    <input id="step-range" type="range" min="0" max="50" step="1" value="0" />
+    <div class="range-labels"><span>0%</span><span>50%</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Expected return (p.a.)</label>
+      <span class="suffix-wrap">
+        <input id="roi-num" type="number" min="1" max="30" step="0.5" value="1" />
+        <span>%</span>
+      </span>
+    </div>
+    <input id="roi-range" type="range" min="1" max="30" step="0.5" value="1" />
+    <div class="range-labels"><span>1%</span><span>30%</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Time period</label>
+      <span class="suffix-wrap">
+        <input id="yrs-num" type="number" min="1" max="40" step="1" value="1" />
+        <span>yr</span>
+      </span>
+    </div>
+    <input id="yrs-range" type="range" min="1" max="40" step="1" value="1" />
+    <div class="range-labels"><span>1 yr</span><span>40 yr</span></div>
+  </div>
+
+  <div class="results">
+    <div class="result-box">
+      <p class="result-label">Invested amount</p>
+      <p class="result-value" id="out-invested">-</p>
+    </div>
+    <div class="result-box">
+      <p class="result-label">Est. returns</p>
+      <p class="result-value" id="out-returns">-</p>
+    </div>
+    <div class="result-box total">
+      <p class="result-label">Total value</p>
+      <p class="result-value" id="out-total">-</p>
+    </div>
+  </div>
+
+  <footer>For illustration purposes only. Not investment advice.</footer>
+</div>
+
+<script>
+  const amtNum = document.getElementById('amt-num');
+  const amtRange = document.getElementById('amt-range');
+  const stepNum = document.getElementById('step-num');
+  const stepRange = document.getElementById('step-range');
+  const roiNum = document.getElementById('roi-num');
+  const roiRange = document.getElementById('roi-range');
+  const yrsNum = document.getElementById('yrs-num');
+  const yrsRange = document.getElementById('yrs-range');
+  const outInvested = document.getElementById('out-invested');
+  const outReturns = document.getElementById('out-returns');
+  const outTotal = document.getElementById('out-total');
+
+  function fmtINR(n) {
+    return '₹' + Math.round(n).toLocaleString('en-IN');
+  }
+
+  function fmtAmountInput(n) {
+    return Math.round(n).toLocaleString('en-IN');
+  }
+
+  function parseAmount(str) {
+    return parseFloat(String(str).replace(/[^0-9.]/g, '')) || 0;
+  }
+
+  function clamp(v, min, max) {
+    return Math.min(max, Math.max(min, v));
+  }
+
+  function computeSIP(monthlyAmt, stepUpPct, annualReturnPct, years) {
+    // Monthly rate derived so it compounds exactly to the stated annual
+    // return over 12 months (matches Groww's published SIP formula).
+    const monthlyRate = Math.pow(1 + annualReturnPct / 100, 1 / 12) - 1;
+    const totalMonths = years * 12;
+    let balance = 0;
+    let invested = 0;
+    let currentMonthly = monthlyAmt;
+
+    for (let m = 1; m <= totalMonths; m++) {
+      // Deposit at the start of the month, then grow for that month
+      // (annuity due) — matches Groww's extra x(1+r) term.
+      balance = (balance + currentMonthly) * (1 + monthlyRate);
+      invested += currentMonthly;
+      if (m % 12 === 0 && m !== totalMonths) {
+        currentMonthly = currentMonthly * (1 + stepUpPct / 100);
+      }
+    }
+
+    return { invested, total: balance, returns: balance - invested };
+  }
+
+  function compute() {
+    const monthlyAmt = clamp(parseAmount(amtNum.value), 500, 100000);
+    const stepUp = clamp(parseFloat(stepNum.value) || 0, 0, 50);
+    const roi = clamp(parseFloat(roiNum.value) || 0, 1, 30);
+    const years = clamp(parseInt(yrsNum.value, 10) || 0, 1, 40);
+
+    const { invested, total, returns } = computeSIP(monthlyAmt, stepUp, roi, years);
+
+    outInvested.textContent = fmtINR(invested);
+    outReturns.textContent = fmtINR(returns);
+    outTotal.textContent = fmtINR(total);
+  }
+
+  amtNum.addEventListener('input', () => {
+    const raw = clamp(parseAmount(amtNum.value), 500, 100000);
+    amtRange.value = raw;
+    compute();
+  });
+  amtNum.addEventListener('blur', () => {
+    const raw = clamp(parseAmount(amtNum.value), 500, 100000);
+    amtNum.value = fmtAmountInput(raw);
+    amtRange.value = raw;
+    compute();
+  });
+  amtRange.addEventListener('input', () => {
+    amtNum.value = fmtAmountInput(amtRange.value);
+    compute();
+  });
+
+  function linkPair(numEl, rangeEl, min, max) {
+    numEl.addEventListener('input', () => {
+      rangeEl.value = clamp(parseFloat(numEl.value) || min, min, max);
+      compute();
+    });
+    rangeEl.addEventListener('input', () => {
+      numEl.value = rangeEl.value;
+      compute();
+    });
+  }
+
+  linkPair(stepNum, stepRange, 0, 50);
+  linkPair(roiNum, roiRange, 1, 30);
+  linkPair(yrsNum, yrsRange, 1, 40);
+
+  compute();
+</script>
+</body>
+</html>
