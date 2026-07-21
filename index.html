@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lumpsum Investment Calculator</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f5f7;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 24px 16px 60px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 24px 32px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0 0 24px;
+  }
+  .field {
+    margin-bottom: 22px;
+  }
+  .field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  label {
+    font-size: 14px;
+    color: #4a4a4a;
+    font-weight: 500;
+  }
+  .value-badge {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  input[type="number"] {
+    width: 150px;
+    text-align: right;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: #e2e2e2;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #9a9a9a;
+    margin-top: 4px;
+  }
+  .results {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .result-box {
+    background: #f6f7f9;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .result-box.total {
+    background: #eaf1ff;
+  }
+  .result-label {
+    font-size: 11.5px;
+    color: #6b6b6b;
+    margin: 0 0 6px;
+  }
+  .result-value {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    word-break: break-word;
+  }
+  .result-box.total .result-value {
+    color: #2f6fed;
+  }
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #b0b0b0;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Lumpsum investment calculator</h1>
+  <p class="subtitle">Estimate the future value of a one-time investment</p>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Total investment</label>
+      <input id="amt-num" type="number" min="500" max="100000000" step="500" value="100000" />
+    </div>
+    <input id="amt-range" type="range" min="500" max="100000000" step="500" value="100000" />
+    <div class="range-labels"><span>₹500</span><span>₹10,00,00,000</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Expected return (p.a.)</label>
+      <span class="value-badge" id="roi-out">12%</span>
+    </div>
+    <input id="roi-range" type="range" min="1" max="30" step="0.5" value="12" />
+    <div class="range-labels"><span>1%</span><span>30%</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Time period</label>
+      <span class="value-badge" id="yrs-out">10 yr</span>
+    </div>
+    <input id="yrs-range" type="range" min="1" max="40" step="1" value="10" />
+    <div class="range-labels"><span>1 yr</span><span>40 yr</span></div>
+  </div>
+
+  <div class="results">
+    <div class="result-box">
+      <p class="result-label">Invested amount</p>
+      <p class="result-value" id="out-invested">-</p>
+    </div>
+    <div class="result-box">
+      <p class="result-label">Est. returns</p>
+      <p class="result-value" id="out-returns">-</p>
+    </div>
+    <div class="result-box total">
+      <p class="result-label">Total value</p>
+      <p class="result-value" id="out-total">-</p>
+    </div>
+  </div>
+
+  <footer>For illustration purposes only. Not investment advice.</footer>
+</div>
+
+<script>
+  const amtNum = document.getElementById('amt-num');
+  const amtRange = document.getElementById('amt-range');
+  const roiRange = document.getElementById('roi-range');
+  const yrsRange = document.getElementById('yrs-range');
+  const roiOut = document.getElementById('roi-out');
+  const yrsOut = document.getElementById('yrs-out');
+  const outInvested = document.getElementById('out-invested');
+  const outReturns = document.getElementById('out-returns');
+  const outTotal = document.getElementById('out-total');
+
+  function fmtINR(n) {
+    return '₹' + Math.round(n).toLocaleString('en-IN');
+  }
+
+  function clamp(v, min, max) {
+    return Math.min(max, Math.max(min, v));
+  }
+
+  function compute() {
+    const amount = clamp(parseFloat(amtNum.value) || 0, 500, 100000000);
+    const roi = parseFloat(roiRange.value);
+    const years = parseInt(yrsRange.value, 10);
+
+    const invested = amount;
+    const returns = invested * Math.pow(1 + roi / 100, years);
+    const total = invested + returns;
+
+    outInvested.textContent = fmtINR(invested);
+    outReturns.textContent = fmtINR(returns);
+    outTotal.textContent = fmtINR(total);
+    roiOut.textContent = roi + '%';
+    yrsOut.textContent = years + ' yr';
+  }
+
+  amtRange.addEventListener('input', () => {
+    amtNum.value = amtRange.value;
+    compute();
+  });
+  amtNum.addEventListener('input', () => {
+    let v = clamp(parseFloat(amtNum.value) || 500, 500, 100000000);
+    amtRange.value = v;
+    compute();
+  });
+  roiRange.addEventListener('input', compute);
+  yrsRange.addEventListener('input', compute);
+
+  compute();
+</script>
+</body>
+</html>
