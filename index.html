@@ -61,6 +61,35 @@
     border-radius: 8px;
     font-weight: 600;
   }
+  #roi-num, #yrs-num {
+    width: 80px;
+    padding-right: 4px;
+  }
+  .suffix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .suffix-wrap span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-left: 6px;
+  }
+  .prefix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .prefix-wrap span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-right: 6px;
+  }
+  #amt-num {
+    width: 130px;
+  }
   input[type="range"] {
     width: 100%;
     -webkit-appearance: none;
@@ -140,16 +169,22 @@
   <div class="field">
     <div class="field-header">
       <label>Total investment</label>
-      <input id="amt-num" type="number" min="500" max="100000000" step="500" value="100000" />
+      <span class="prefix-wrap">
+        <span>₹</span>
+        <input id="amt-num" type="text" inputmode="numeric" value="1,00,000" />
+      </span>
     </div>
-    <input id="amt-range" type="range" min="500" max="100000000" step="500" value="100000" />
-    <div class="range-labels"><span>₹500</span><span>₹10,00,00,000</span></div>
+    <input id="amt-range" type="range" min="500" max="10000000" step="500" value="100000" />
+    <div class="range-labels"><span>₹500</span><span>₹1,00,00,000</span></div>
   </div>
 
   <div class="field">
     <div class="field-header">
       <label>Expected return (p.a.)</label>
-      <span class="value-badge" id="roi-out">12%</span>
+      <span class="suffix-wrap">
+        <input id="roi-num" type="number" min="1" max="30" step="0.5" value="12" />
+        <span>%</span>
+      </span>
     </div>
     <input id="roi-range" type="range" min="1" max="30" step="0.5" value="12" />
     <div class="range-labels"><span>1%</span><span>30%</span></div>
@@ -158,7 +193,10 @@
   <div class="field">
     <div class="field-header">
       <label>Time period</label>
-      <span class="value-badge" id="yrs-out">10 yr</span>
+      <span class="suffix-wrap">
+        <input id="yrs-num" type="number" min="1" max="40" step="1" value="10" />
+        <span>yr</span>
+      </span>
     </div>
     <input id="yrs-range" type="range" min="1" max="40" step="1" value="10" />
     <div class="range-labels"><span>1 yr</span><span>40 yr</span></div>
@@ -185,10 +223,10 @@
 <script>
   const amtNum = document.getElementById('amt-num');
   const amtRange = document.getElementById('amt-range');
+  const roiNum = document.getElementById('roi-num');
   const roiRange = document.getElementById('roi-range');
+  const yrsNum = document.getElementById('yrs-num');
   const yrsRange = document.getElementById('yrs-range');
-  const roiOut = document.getElementById('roi-out');
-  const yrsOut = document.getElementById('yrs-out');
   const outInvested = document.getElementById('out-invested');
   const outReturns = document.getElementById('out-returns');
   const outTotal = document.getElementById('out-total');
@@ -197,37 +235,61 @@
     return '₹' + Math.round(n).toLocaleString('en-IN');
   }
 
+  function fmtAmountInput(n) {
+    return Math.round(n).toLocaleString('en-IN');
+  }
+
+  function parseAmount(str) {
+    return parseFloat(String(str).replace(/[^0-9.]/g, '')) || 0;
+  }
+
   function clamp(v, min, max) {
     return Math.min(max, Math.max(min, v));
   }
 
   function compute() {
-    const amount = clamp(parseFloat(amtNum.value) || 0, 500, 100000000);
-    const roi = parseFloat(roiRange.value);
-    const years = parseInt(yrsRange.value, 10);
+    const amount = clamp(parseAmount(amtNum.value), 500, 10000000);
+    const roi = clamp(parseFloat(roiNum.value) || 0, 1, 30);
+    const years = clamp(parseInt(yrsNum.value, 10) || 0, 1, 40);
 
     const invested = amount;
-    const returns = invested * Math.pow(1 + roi / 100, years);
-    const total = invested + returns;
+    const total = invested * Math.pow(1 + roi / 100, years);
+    const returns = total - invested;
 
     outInvested.textContent = fmtINR(invested);
     outReturns.textContent = fmtINR(returns);
     outTotal.textContent = fmtINR(total);
-    roiOut.textContent = roi + '%';
-    yrsOut.textContent = years + ' yr';
   }
 
-  amtRange.addEventListener('input', () => {
-    amtNum.value = amtRange.value;
-    compute();
-  });
   amtNum.addEventListener('input', () => {
-    let v = clamp(parseFloat(amtNum.value) || 500, 500, 100000000);
-    amtRange.value = v;
+    const raw = clamp(parseAmount(amtNum.value), 500, 10000000);
+    amtRange.value = raw;
     compute();
   });
-  roiRange.addEventListener('input', compute);
-  yrsRange.addEventListener('input', compute);
+  amtNum.addEventListener('blur', () => {
+    const raw = clamp(parseAmount(amtNum.value), 500, 10000000);
+    amtNum.value = fmtAmountInput(raw);
+    amtRange.value = raw;
+    compute();
+  });
+  amtRange.addEventListener('input', () => {
+    amtNum.value = fmtAmountInput(amtRange.value);
+    compute();
+  });
+
+  function linkPair(numEl, rangeEl, min, max) {
+    numEl.addEventListener('input', () => {
+      rangeEl.value = clamp(parseFloat(numEl.value) || min, min, max);
+      compute();
+    });
+    rangeEl.addEventListener('input', () => {
+      numEl.value = rangeEl.value;
+      compute();
+    });
+  }
+
+  linkPair(roiNum, roiRange, 1, 30);
+  linkPair(yrsNum, yrsRange, 1, 40);
 
   compute();
 </script>
