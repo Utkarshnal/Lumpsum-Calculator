@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Retirement Corpus Calculator</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f5f7;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 24px 16px 60px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 24px 32px;
+    max-width: 560px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #6b6b6b;
+    text-decoration: none;
+    margin-bottom: 14px;
+  }
+  .back-link:hover { color: #2f6fed; }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0 0 20px;
+  }
+  h2.section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2f6fed;
+    margin: 30px 0 2px;
+  }
+  h2.section-title .step {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    color: #fff;
+    font-size: 11px;
+    text-align: center;
+    line-height: 18px;
+    margin-right: 6px;
+  }
+  .section-hint {
+    font-size: 11.5px;
+    color: #9a9a9a;
+    margin: 0 0 14px;
+  }
+  hr.divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 26px 0 0;
+  }
+
+  /* Field / slider styles (shared with other calculators) */
+  .field { margin-bottom: 20px; }
+  .field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  label {
+    font-size: 14px;
+    color: #4a4a4a;
+    font-weight: 500;
+  }
+  input[type="number"], input[type="text"] {
+    text-align: right;
+    padding: 6px 10px;
+    font-size: 14px;
+    background: #fffdf2;
+    border: 1px solid #f0dfa0;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  input[type="number"]:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #2f6fed;
+    background: #ffffff;
+  }
+  .narrow { width: 70px; }
+  .suffix-wrap, .prefix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .suffix-wrap span { margin-left: 6px; }
+  .prefix-wrap span { margin-right: 6px; }
+  .suffix-wrap span, .prefix-wrap span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  #expense-num { width: 130px; }
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: #e2e2e2;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f6fed;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px #2f6fed;
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #9a9a9a;
+    margin-top: 4px;
+  }
+  .field-note {
+    font-size: 11px;
+    color: #9a9a9a;
+    margin: -14px 0 0;
+  }
+
+  /* Info badges (auto-computed, read-only context) */
+  .badges {
+    display: flex;
+    gap: 10px;
+    margin: 4px 0 22px;
+  }
+  .badge {
+    flex: 1;
+    background: #f6f7f9;
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .badge-label {
+    font-size: 10.5px;
+    color: #9a9a9a;
+    margin: 0 0 4px;
+  }
+  .badge-value {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+    color: #1a1a1a;
+  }
+
+  /* Results */
+  .results {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .results.single { grid-template-columns: 1fr; }
+  .result-box {
+    background: #f6f7f9;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .result-box.total { background: #eaf1ff; }
+  .result-label {
+    font-size: 11.5px;
+    color: #6b6b6b;
+    margin: 0 0 6px;
+  }
+  .result-value {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    word-break: break-word;
+  }
+  .result-box.total .result-value {
+    color: #2f6fed;
+    font-size: 20px;
+  }
+  .result-box.hero {
+    padding: 20px 10px;
+  }
+  .result-box.hero .result-value { font-size: 26px; }
+
+  /* Asset allocation table */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #ececec;
+  }
+  table.assets {
+    width: 100%;
+    min-width: 460px;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.assets th {
+    text-align: right;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #9a9a9a;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 10px 8px 8px;
+    background: #f9fafb;
+    white-space: nowrap;
+  }
+  table.assets th:first-child { text-align: left; }
+  table.assets td {
+    padding: 6px 8px;
+    border-top: 1px solid #f0f0f0;
+    text-align: right;
+    vertical-align: middle;
+  }
+  table.assets td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+  }
+  table.assets input[type="number"] { width: 60px; font-size: 13px; }
+  .pct-badge {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #6b6b6b;
+  }
+  .ret-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .ret-cell span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b6b6b;
+  }
+  tr.total-row td {
+    border-top: 2px solid #e2e2e2;
+    font-weight: 700;
+    color: #1a1a1a;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  tr.total-row .pct-badge { color: #1a1a1a; }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #9a9a9a;
+    margin: 10px 2px 0;
+  }
+  .legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: #fffdf2;
+    border: 1px solid #f0dfa0;
+    display: inline-block;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #b0b0b0;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <a class="back-link" href="index.html">&#8249; All calculators</a>
+  <h1>Retirement corpus calculator</h1>
+  <p class="subtitle">Estimate the corpus you'll need, and the monthly SIP to get there</p>
+
+  <h2 class="section-title"><span class="step">A</span>How much do you need to retire?</h2>
+  <p class="section-hint">Based on your current expenses, adjusted for inflation.</p>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Current age</label>
+      <span class="suffix-wrap">
+        <input class="narrow" id="cur-age-num" type="number" min="18" max="70" step="1" value="31" />
+        <span>yr</span>
+      </span>
+    </div>
+    <input id="cur-age-range" type="range" min="18" max="70" step="1" value="31" />
+    <div class="range-labels"><span>18 yr</span><span>70 yr</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Retirement age</label>
+      <span class="suffix-wrap">
+        <input class="narrow" id="ret-age-num" type="number" min="40" max="75" step="1" value="60" />
+        <span>yr</span>
+      </span>
+    </div>
+    <input id="ret-age-range" type="range" min="40" max="75" step="1" value="60" />
+    <div class="range-labels"><span>40 yr</span><span>75 yr</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Life expectancy</label>
+      <span class="suffix-wrap">
+        <input class="narrow" id="life-exp-num" type="number" min="60" max="100" step="1" value="90" />
+        <span>yr</span>
+      </span>
+    </div>
+    <input id="life-exp-range" type="range" min="60" max="100" step="1" value="90" />
+    <div class="range-labels"><span>60 yr</span><span>100 yr</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Inflation</label>
+      <span class="suffix-wrap">
+        <input class="narrow" id="inf-num" type="number" min="0" max="15" step="0.5" value="7" />
+        <span>%</span>
+      </span>
+    </div>
+    <input id="inf-range" type="range" min="0" max="15" step="0.5" value="7" />
+    <div class="range-labels"><span>0%</span><span>15%</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Current monthly expense</label>
+      <span class="prefix-wrap">
+        <span>₹</span>
+        <input id="expense-num" type="text" inputmode="numeric" value="50,000" />
+      </span>
+    </div>
+    <input id="expense-range" type="range" min="5000" max="1000000" step="1000" value="50000" />
+    <div class="range-labels"><span>₹5,000</span><span>₹10,00,000</span></div>
+    <p class="field-note">*Only include basic monthly expenses</p>
+  </div>
+
+  <div class="badges">
+    <div class="badge">
+      <p class="badge-label">Years to retirement</p>
+      <p class="badge-value" id="out-years-to-retirement">-</p>
+    </div>
+    <div class="badge">
+      <p class="badge-label">Years in retirement</p>
+      <p class="badge-value" id="out-years-in-retirement">-</p>
+    </div>
+  </div>
+
+  <div class="results single">
+    <div class="result-box total hero">
+      <p class="result-label">Corpus required for retirement</p>
+      <p class="result-value" id="out-corpus-required">-</p>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <h2 class="section-title"><span class="step">B1</span>Your current retirement corpus</h2>
+  <p class="section-hint">Amounts are in ₹ lakh. Edit the highlighted cells to match what you've already set aside for retirement.</p>
+
+  <div class="table-wrap">
+    <table class="assets" id="assets-table">
+      <thead>
+        <tr>
+          <th>Asset class</th>
+          <th>Exp. return</th>
+          <th>Amount (₹L)</th>
+          <th>Alloc.</th>
+        </tr>
+      </thead>
+      <tbody id="assets-body"></tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td>Total</td>
+          <td><span class="pct-badge" id="out-total-return">-</span></td>
+          <td><span class="pct-badge" id="out-total-amount">-</span></td>
+          <td><span class="pct-badge">100%</span></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="legend"><span class="legend-swatch"></span> Editable input</div>
+
+  <hr class="divider" />
+
+  <h2 class="section-title"><span class="step">B2</span>Monthly SIP to close the gap</h2>
+  <p class="section-hint">A step-up SIP, invested until retirement, to cover the shortfall between what you'll need and what your current corpus will grow to.</p>
+
+  <div class="badges" style="margin-top: 4px;">
+    <div class="badge">
+      <p class="badge-label">Corpus needed</p>
+      <p class="badge-value" id="out-b2-required">-</p>
+    </div>
+    <div class="badge">
+      <p class="badge-label">Corpus at retirement*</p>
+      <p class="badge-value" id="out-b2-current">-</p>
+    </div>
+    <div class="badge">
+      <p class="badge-label">Gap</p>
+      <p class="badge-value" id="out-b2-gap">-</p>
+    </div>
+  </div>
+  <p class="field-note" style="margin: -14px 0 20px;">*What your current corpus (above) grows to by retirement, at its blended return</p>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Annual step-up</label>
+      <span class="suffix-wrap">
+        <input class="narrow" id="step-num" type="number" min="0" max="50" step="1" value="10" />
+        <span>%</span>
+      </span>
+    </div>
+    <input id="step-range" type="range" min="0" max="50" step="1" value="10" />
+    <div class="range-labels"><span>0%</span><span>50%</span></div>
+  </div>
+
+  <div class="field">
+    <div class="field-header">
+      <label>Expected return (p.a.)</label>
+      <span class="suffix-wrap">
+        <input class="narrow" id="sip-roi-num" type="number" min="1" max="30" step="0.5" value="12" />
+        <span>%</span>
+      </span>
+    </div>
+    <input id="sip-roi-range" type="range" min="1" max="30" step="0.5" value="12" />
+    <div class="range-labels"><span>1%</span><span>30%</span></div>
+  </div>
+
+  <div class="badges">
+    <div class="badge">
+      <p class="badge-label">Investment period</p>
+      <p class="badge-value" id="out-invest-period">-</p>
+    </div>
+  </div>
+
+  <div class="results single">
+    <div class="result-box total hero">
+      <p class="result-label" id="out-sip-label">Monthly SIP required</p>
+      <p class="result-value" id="out-sip-amount">-</p>
+    </div>
+  </div>
+
+  <footer>For illustration purposes only. Not investment or financial advice.</footer>
+</div>
+
+<script>
+  /* ---------- Shared helpers ---------- */
+  function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+  function fmtINR(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+  function fmtAmountInput(n) { return Math.round(n).toLocaleString('en-IN'); }
+  function parseAmount(str) { return parseFloat(String(str).replace(/[^0-9.]/g, '')) || 0; }
+  function fmtL(n) { return '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' L'; }
+  function fmtCr(n) { return '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Cr'; }
+  function fmtPct(n) { return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'; }
+
+  function linkPair(numEl, rangeEl, min, max, onChange) {
+    numEl.addEventListener('input', () => {
+      rangeEl.value = clamp(parseFloat(numEl.value) || min, min, max);
+      onChange();
+    });
+    rangeEl.addEventListener('input', () => {
+      numEl.value = rangeEl.value;
+      onChange();
+    });
+  }
+
+  /* ---------- Section A: corpus required ---------- */
+  const curAgeNum = document.getElementById('cur-age-num');
+  const curAgeRange = document.getElementById('cur-age-range');
+  const retAgeNum = document.getElementById('ret-age-num');
+  const retAgeRange = document.getElementById('ret-age-range');
+  const lifeExpNum = document.getElementById('life-exp-num');
+  const lifeExpRange = document.getElementById('life-exp-range');
+  const infNum = document.getElementById('inf-num');
+  const infRange = document.getElementById('inf-range');
+  const expenseNum = document.getElementById('expense-num');
+  const expenseRange = document.getElementById('expense-range');
+
+  const outYearsToRetirement = document.getElementById('out-years-to-retirement');
+  const outYearsInRetirement = document.getElementById('out-years-in-retirement');
+  const outCorpusRequired = document.getElementById('out-corpus-required');
+
+  /* ---------- Section B1: asset allocation ---------- */
+  // Same asset classes/returns as the Retirement Corpus model; allocations start at 0
+  // since this represents money already earmarked for retirement (not overall net worth).
+  const ASSETS = [
+    { name: 'Real Estate',              ret: 6.0,  amt: 0 },
+    { name: 'Fixed Deposit',            ret: 6.5,  amt: 0 },
+    { name: 'Gold',                     ret: 9.0,  amt: 0 },
+    { name: 'Equity MF',                ret: 12.0, amt: 0 },
+    { name: 'Stocks',                   ret: 12.0, amt: 0 },
+    { name: 'Debt MF',                  ret: 7.5,  amt: 0 },
+    { name: 'Bank Balance',             ret: 4.0,  amt: 0 },
+    { name: 'National Pension Scheme',  ret: 9.0,  amt: 0 },
+    { name: 'Public Provident Fund',    ret: 7.1,  amt: 0 }
+  ];
+
+  const assetsBody = document.getElementById('assets-body');
+  const outTotalReturn = document.getElementById('out-total-return');
+  const outTotalAmount = document.getElementById('out-total-amount');
+
+  ASSETS.forEach((asset, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${asset.name}</td>
+      <td><span class="ret-cell"><input type="number" id="ret-${i}" min="0" max="30" step="0.1" value="${asset.ret}" /><span>%</span></span></td>
+      <td><input type="number" id="amt-${i}" min="0" max="10000" step="0.5" value="${asset.amt}" /></td>
+      <td><span class="pct-badge" id="pct-${i}">-</span></td>
+    `;
+    assetsBody.appendChild(tr);
+  });
+
+  /* ---------- Section B2: step-up SIP gap calculator ---------- */
+  const stepNum = document.getElementById('step-num');
+  const stepRange = document.getElementById('step-range');
+  const sipRoiNum = document.getElementById('sip-roi-num');
+  const sipRoiRange = document.getElementById('sip-roi-range');
+
+  const outB2Required = document.getElementById('out-b2-required');
+  const outB2Current = document.getElementById('out-b2-current');
+  const outB2Gap = document.getElementById('out-b2-gap');
+  const outInvestPeriod = document.getElementById('out-invest-period');
+  const outSipLabel = document.getElementById('out-sip-label');
+  const outSipAmount = document.getElementById('out-sip-amount');
+
+  // Same annuity-due monthly-compounding SIP logic used on the SIP calculator page.
+  function computeSIP(monthlyAmt, stepUpPct, annualReturnPct, years) {
+    const monthlyRate = Math.pow(1 + annualReturnPct / 100, 1 / 12) - 1;
+    const totalMonths = years * 12;
+    let balance = 0;
+    let invested = 0;
+    let currentMonthly = monthlyAmt;
+
+    for (let m = 1; m <= totalMonths; m++) {
+      balance = (balance + currentMonthly) * (1 + monthlyRate);
+      invested += currentMonthly;
+      if (m % 12 === 0 && m !== totalMonths) {
+        currentMonthly = currentMonthly * (1 + stepUpPct / 100);
+      }
+    }
+    return { invested, total: balance, returns: balance - invested };
+  }
+
+  function compute() {
+    /* --- A: corpus required --- */
+    const currentAge = clamp(parseInt(curAgeNum.value, 10) || 0, 18, 70);
+    const retirementAge = clamp(parseInt(retAgeNum.value, 10) || 0, 40, 75);
+    const lifeExpectancy = clamp(parseInt(lifeExpNum.value, 10) || 0, 60, 100);
+    const inflation = clamp(parseFloat(infNum.value) || 0, 0, 15);
+    const monthlyExpense = clamp(parseAmount(expenseNum.value), 5000, 1000000);
+
+    const yearsToRetirement = Math.max(retirementAge - currentAge, 0);
+    const yearsInRetirement = Math.max(lifeExpectancy - retirementAge, 0);
+
+    const yearlyExpense = monthlyExpense * 12;
+    const yearlyExpenseAtRetirement = yearlyExpense * Math.pow(1 + inflation / 100, yearsToRetirement);
+    const corpusRequiredRupees = yearlyExpenseAtRetirement * yearsInRetirement;
+    const corpusRequiredCr = corpusRequiredRupees / 1e7;
+
+    outYearsToRetirement.textContent = yearsToRetirement + ' yr';
+    outYearsInRetirement.textContent = yearsInRetirement + ' yr';
+    outCorpusRequired.textContent = fmtCr(corpusRequiredCr);
+
+    /* --- B1: current corpus allocation --- */
+    let totalAmt = 0;
+    let weightedReturnSum = 0;
+    const rows = ASSETS.map((asset, i) => {
+      const ret = clamp(parseFloat(document.getElementById(`ret-${i}`).value) || 0, 0, 100);
+      const amt = clamp(parseFloat(document.getElementById(`amt-${i}`).value) || 0, 0, 1000000);
+      totalAmt += amt;
+      weightedReturnSum += ret * amt;
+      return { ret, amt };
+    });
+    rows.forEach((row, i) => {
+      const pct = totalAmt > 0 ? (row.amt / totalAmt) * 100 : 0;
+      document.getElementById(`pct-${i}`).textContent = fmtPct(pct);
+    });
+    const blendedReturn = totalAmt > 0 ? weightedReturnSum / totalAmt : 0;
+    outTotalAmount.textContent = fmtL(totalAmt);
+    outTotalReturn.textContent = fmtPct(blendedReturn);
+
+    /* --- B2: gap + step-up SIP --- */
+    const stepUp = clamp(parseFloat(stepNum.value) || 0, 0, 50);
+    const sipRoi = clamp(parseFloat(sipRoiNum.value) || 0, 1, 30);
+
+    // Current corpus (₹ lakh) grown at its own blended return until retirement, in Cr.
+    const corpusAtRetirementCr = (totalAmt * Math.pow(1 + blendedReturn / 100, yearsToRetirement)) / 100;
+    const gapCr = Math.max(corpusRequiredCr - corpusAtRetirementCr, 0);
+
+    outB2Required.textContent = fmtCr(corpusRequiredCr);
+    outB2Current.textContent = fmtCr(corpusAtRetirementCr);
+    outB2Gap.textContent = fmtCr(gapCr);
+    outInvestPeriod.textContent = yearsToRetirement + ' yr';
+
+    if (gapCr <= 0 || yearsToRetirement <= 0) {
+      outSipLabel.textContent = 'Monthly SIP required';
+      outSipAmount.textContent = gapCr <= 0 && yearsToRetirement > 0
+        ? "You're on track — no gap!"
+        : fmtINR(0);
+      return;
+    }
+
+    // The SIP formula is linear in the starting monthly amount, so back-calculate
+    // the required amount from the future value of a ₹1 step-up SIP.
+    const unitFV = computeSIP(1, stepUp, sipRoi, yearsToRetirement).total;
+    const gapRupees = gapCr * 1e7;
+    const requiredSip = unitFV > 0 ? gapRupees / unitFV : 0;
+
+    outSipLabel.textContent = 'Monthly SIP required';
+    outSipAmount.textContent = fmtINR(requiredSip);
+  }
+
+  /* ---------- Wire up events ---------- */
+  linkPair(curAgeNum, curAgeRange, 18, 70, compute);
+  linkPair(retAgeNum, retAgeRange, 40, 75, compute);
+  linkPair(lifeExpNum, lifeExpRange, 60, 100, compute);
+  linkPair(infNum, infRange, 0, 15, compute);
+
+  expenseNum.addEventListener('input', () => {
+    const raw = clamp(parseAmount(expenseNum.value), 5000, 1000000);
+    expenseRange.value = raw;
+    compute();
+  });
+  expenseNum.addEventListener('blur', () => {
+    const raw = clamp(parseAmount(expenseNum.value), 5000, 1000000);
+    expenseNum.value = fmtAmountInput(raw);
+    expenseRange.value = raw;
+    compute();
+  });
+  expenseRange.addEventListener('input', () => {
+    expenseNum.value = fmtAmountInput(expenseRange.value);
+    compute();
+  });
+
+  ASSETS.forEach((asset, i) => {
+    document.getElementById(`ret-${i}`).addEventListener('input', compute);
+    document.getElementById(`amt-${i}`).addEventListener('input', compute);
+  });
+
+  linkPair(stepNum, stepRange, 0, 50, compute);
+  linkPair(sipRoiNum, sipRoiRange, 1, 30, compute);
+
+  compute();
+</script>
+</body>
+</html>
