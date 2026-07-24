@@ -5,7 +5,175 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Investment Calculators</title>
 <style>
+  * { box-sizing: border-box; }<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Investment Calculators</title>
+<style>
   * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f5f7;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 24px 16px 60px;
+    display: flex;
+    justify-content: center;
+  }
+  .wrap {
+    max-width: 460px;
+    width: 100%;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0;
+  }
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover {
+    border-color: #2f6fed;
+    transform: translateY(-1px);
+  }
+  .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #eaf1ff;
+    color: #2f6fed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .card-text {
+    flex: 1;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0;
+    line-height: 1.4;
+  }
+  .arrow {
+    font-size: 18px;
+    color: #b0b0b0;
+    flex-shrink: 0;
+  }
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #b0b0b0;
+    margin-top: 28px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Investment calculators</h1>
+    <p class="subtitle">Pick a calculator to estimate your investment growth</p>
+  </div>
+
+  <div class="cards">
+    <a class="card-link" href="lumpsum.html">
+      <div class="card">
+        <div class="icon">L</div>
+        <div class="card-text">
+          <p class="card-title">Lumpsum calculator</p>
+          <p class="card-desc">Estimate the future value of a one-time investment</p>
+        </div>
+        <div class="arrow">&#8250;</div>
+      </div>
+    </a>
+
+    <a class="card-link" href="sip.html">
+      <div class="card">
+        <div class="icon">S</div>
+        <div class="card-text">
+          <p class="card-title">SIP calculator</p>
+          <p class="card-desc">Estimate returns on a monthly SIP, with optional annual step-up</p>
+        </div>
+        <div class="arrow">&#8250;</div>
+      </div>
+    </a>
+
+    <a class="card-link" href="emi.html">
+      <div class="card">
+        <div class="icon">E</div>
+        <div class="card-text">
+          <p class="card-title">EMI calculator</p>
+          <p class="card-desc">Estimate your equated monthly installment on a loan</p>
+        </div>
+        <div class="arrow">&#8250;</div>
+      </div>
+    </a>
+
+    <a class="card-link" href="networth.html">
+      <div class="card">
+        <div class="icon">N</div>
+        <div class="card-text">
+          <p class="card-title">Net worth calculator</p>
+          <p class="card-desc">See your net worth, blended expected return, and future value</p>
+        </div>
+        <div class="arrow">&#8250;</div>
+      </div>
+    </a>
+
+    <a class="card-link" href="retirement.html">
+      <div class="card">
+        <div class="icon">R</div>
+        <div class="card-text">
+          <p class="card-title">Retirement corpus calculator</p>
+          <p class="card-desc">Estimate your retirement corpus and the monthly SIP to get there</p>
+        </div>
+        <div class="arrow">&#8250;</div>
+      </div>
+    </a>
+  </div>
+
+  <footer>For illustration purposes only. Not investment advice.</footer>
+</div>
+</body>
+</html>
+
   body {
     font-family: -apple-system, BlinkMacSystemFont,<!DOCTYPE html>
 <html lang="en">
